@@ -62,6 +62,10 @@ public class Record {
         this.updatedAt = updatedAt;
     }
 
+    public String toString() {
+        return name + "\n" +  description;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -127,86 +131,3 @@ public class Record {
     }
 
 }
-//@Entity(tableName = "records")
-//public class Record {
-//
-//    @PrimaryKey(autoGenerate = true)
-//    @ColumnInfo(name = "recordID")
-//    private long recordID;
-//
-//    @ColumnInfo(name = "name")
-//    private String name;
-//
-//    @ColumnInfo(name = "description")
-//    private String description;
-//
-//    @ColumnInfo(name =  "price")
-//    private double price;
-//
-//    @ColumnInfo(name =  "rating")
-//    private int rating;
-//
-//    @TypeConverters(Converters.class)
-//    @ColumnInfo(name = "dateModified")
-//    private Date dateModified;
-//
-//    @TypeConverters(Converters.class)
-//    @ColumnInfo(name = "dateCreated")
-//    private Date dateCreated;
-//
-//    public long getRecordID() {
-//        return recordID;
-//    }
-//
-//    public void setRecordID(long recordID) {
-//        this.recordID = recordID;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-//
-//    public String getDescription() {
-//        return description;
-//    }
-//
-//    public void setDescription(String description) {
-//        this.description = description;
-//    }
-//
-//    public double getPrice() {
-//        return price;
-//    }
-//
-//    public void setPrice(double price) {
-//        this.price = price;
-//    }
-//
-//    public int getRating() {
-//        return rating;
-//    }
-//
-//    public void setRating(int rating) {
-//        this.rating = rating;
-//    }
-//
-//    public Date getDateModified() {
-//        return dateModified;
-//    }
-//
-//    public void setDateModified(Date dateModified) {
-//        this.dateModified = dateModified;
-//    }
-//
-//    public Date getDateCreated() {
-//        return dateCreated;
-//    }
-//
-//    public void setDateCreated(Date dateCreated) {
-//        this.dateCreated = dateCreated;
-//    }
-//}
