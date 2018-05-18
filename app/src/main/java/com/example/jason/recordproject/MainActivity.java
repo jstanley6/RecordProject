@@ -1,12 +1,15 @@
 package com.example.jason.recordproject;
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
@@ -16,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -27,7 +31,9 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends BaseActivity {
@@ -35,6 +41,7 @@ public class MainActivity extends BaseActivity {
     private ListView lstViewRecords;
     ArrayAdapter adapter;
     TextView txtAllRecords;
+    Record record;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,9 +75,42 @@ public class MainActivity extends BaseActivity {
                     public void onErrorResponse( VolleyError error ) {
                         // Do something with the error
                         Log.d( "INTERNET", error.toString() );
+                        AlertDialog alertDialog = new AlertDialog.Builder(
+                                MainActivity.this).create();
+
+                        // Setting Dialog Title
+                        alertDialog.setTitle("Bad Internet Connection or Bad Login ");
+
+                        // Setting Dialog Message
+                        alertDialog.setMessage("Please make sure you are entering the right credentials or check internet connection and try again.");
+
+
+                        // Setting Try Again Button
+                        alertDialog.setButton("Try Again", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                MainActivity.this.startActivity(intent);
+
+                            }
+                        });
+
+                        alertDialog.show();
+
                         toastIt( "Internet Failure: " + error.toString() );
                     }
-                } );
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                String credentials = username + ":" + password;
+                Log.d( "AUTH", "Login Info: " + credentials );
+                String auth = "Basic " + Base64.encodeToString( credentials.getBytes(), Base64.NO_WRAP );
+                headers.put( "Authorization", auth );
+                return headers;
+            }
+
+        };
 
         requestQueue.add( request );
 
@@ -78,11 +118,10 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-//                        toastIt( "You clicked on " + position );
                 intent = new Intent(MainActivity.this, ShowActivity.class);
-//                intent.putExtra("recordID", records[position].getId());
                 intent.putExtra("recordID", records[position].getId());
                 toastIt("RecordID is " + records[position].getId());
+
                 startActivity(intent);
 
             }

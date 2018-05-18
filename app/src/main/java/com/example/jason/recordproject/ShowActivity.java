@@ -6,23 +6,30 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.method.LinkMovementMethod;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ShowActivity extends BaseActivity {
 
     Record record;
+    Record singleRecord;
     TextView txtName;
     TextView txtDesc;
     TextView txtPrice;
@@ -30,6 +37,8 @@ public class ShowActivity extends BaseActivity {
     TextView txtImage;
     DecimalFormat precision = new DecimalFormat("0.00");
     int recordID;
+    int idRecord;
+    ImageView imageView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,14 +54,12 @@ public class ShowActivity extends BaseActivity {
         txtDesc = findViewById(R.id.txtDesc);
         txtPrice = findViewById(R.id.txtPrice);
         txtRating = findViewById(R.id.txtRating);
-        txtImage = findViewById(R.id.txtImage);
+        imageView = findViewById(R.id.imgView);
+//        txtImage = findViewById(R.id.txtImage);
         intent = getIntent();
         recordID = intent.getIntExtra("recordID", 0);
 
-//        txtName.setText(records[recordID].getName());
-//        txtDesc.setText(records[recordID].getDescription());
-//        txtPrice.setText(records[recordID].getPrice().toString());
-//        txtRating.setText(records[recordID].getRating().toString());
+
 
         String url = "https://apirecord.azurewebsites.net/records/" + recordID;
         StringRequest request = new StringRequest(
@@ -71,7 +78,8 @@ public class ShowActivity extends BaseActivity {
                         txtDesc.setText(record.getDescription());
                         txtPrice.setText("$" + precision.format(record.getPrice()));
                         txtRating.setText(Integer.toString(record.getRating()));
-                        txtImage.setText(record.getImage());
+                        Picasso.with(getApplicationContext()).load(record.getImage()).into(imageView);
+//                        txtImage.setText(record.getImage());
 
 
 
@@ -84,7 +92,19 @@ public class ShowActivity extends BaseActivity {
                         Log.d( "INTERNET", error.toString() );
                         toastIt( "Internet Failure: " + error.toString() );
                     }
-                } );
+                } )
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                String credentials = username + ":" + password;
+                Log.d( "AUTH", "Login Info: " + credentials );
+                String auth = "Basic " + Base64.encodeToString( credentials.getBytes(), Base64.NO_WRAP );
+                headers.put( "Authorization", auth );
+                return headers;
+            }
+
+        };
 
         requestQueue.add( request );
 
@@ -94,7 +114,8 @@ public class ShowActivity extends BaseActivity {
     public void switchToEdit(View v) {
 
         intent = new Intent(this, EditActivity.class);
-        intent.putExtra("recordID", record.getId());
+        intent.putExtra("recordID", recordID);
+        toastIt("Record ID IS" + recordID);
         ShowActivity.this.startActivity(intent);
     }
 
@@ -127,7 +148,18 @@ public class ShowActivity extends BaseActivity {
                                         Log.d( "RECORD", error.toString() );
                                     }
                                 }
-                        );
+                        ) {
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String> headers = new HashMap<String, String>();
+                                String credentials = username + ":" + password;
+                                Log.d( "AUTH", "Login Info: " + credentials );
+                                String auth = "Basic " + Base64.encodeToString( credentials.getBytes(), Base64.NO_WRAP );
+                                headers.put( "Authorization", auth );
+                                return headers;
+                            }
+
+                        };
 
                         requestQueue.add( request );
                         toastIt("Record Deleted");

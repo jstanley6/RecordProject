@@ -1,11 +1,13 @@
 package com.example.jason.recordproject;
 
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
@@ -26,6 +28,7 @@ public class BaseActivity extends AppCompatActivity {
     Record record;
     Gson gson;
     static  Record[] records;
+    static String username, password;
 
 
     List<String> recordNames = new ArrayList<>();
@@ -36,6 +39,9 @@ public class BaseActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        username = "dave";
+//        password = "jones";
 
         //Volley Library
         Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
@@ -50,4 +56,6 @@ public class BaseActivity extends AppCompatActivity {
     public void toastIt(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
+
+
 }

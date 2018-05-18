@@ -6,10 +6,12 @@ import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -23,6 +25,7 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class EditActivity extends BaseActivity {
 
@@ -34,7 +37,13 @@ public class EditActivity extends BaseActivity {
     EditText edtImage;
     Record record;
     int recordID;
+    String recordName;
+    String recordDesc;
+    double recordPrice;
+    int recordRating;
+    String recordImage;
 
+    int idRecord;
 
     DecimalFormat precision = new DecimalFormat("0.00");
 
@@ -42,6 +51,7 @@ public class EditActivity extends BaseActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+
         edtName = findViewById(R.id.edtName);
         edtDesc = findViewById(R.id.edtDescription);
         edtPrice = findViewById(R.id.edtPrice);
@@ -56,12 +66,7 @@ public class EditActivity extends BaseActivity {
         if( getIntent().getExtras() != null ) {
           recordID = getIntent().getExtras().getInt( "recordID" );
        }
-//
-//
-//        edtName.setText(records[recordID].getName());
-//        edtDesc.setText(records[recordID].getDescription());
-//        edtPrice.setText(records[recordID].getPrice().toString());
-//        edtRating.setText(records[recordID].getRating().toString());
+
 
         toastIt("recordid is " + recordID);
         String url = "https://apirecord.azurewebsites.net/records/" + recordID;
@@ -92,13 +97,26 @@ public class EditActivity extends BaseActivity {
                         Log.d( "INTERNET", error.toString() );
                         toastIt( "Internet Failure: " + error.toString() );
                     }
-                } );
+                } )
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                String credentials = username + ":" + password;
+                Log.d( "AUTH", "Login Info: " + credentials );
+                String auth = "Basic " + Base64.encodeToString( credentials.getBytes(), Base64.NO_WRAP );
+                headers.put( "Authorization", auth );
+                return headers;
+            }
+
+        };
 
         requestQueue.add( request );
 
     }
 
     public void editButtonOnClick(View v) {
+
 
         String url = "https://apirecord.azurewebsites.net/records/" + recordID;
 
@@ -123,8 +141,9 @@ public class EditActivity extends BaseActivity {
                     public void onResponse( JSONObject response ) {
                         Log.d( "RECORD", response.toString() );
                         intent = new Intent(getApplicationContext(), ShowActivity.class);
-                        intent.putExtra("recordID", record.getId());
-                        toastIt("Record ID IS " + record.getId());
+                        intent.putExtra("recordID", recordID);
+                        records[recordID] = record;
+                        toastIt("Record ID IS " + idRecord);
                         EditActivity.this.startActivity(intent);
                     }
                 },
@@ -134,7 +153,19 @@ public class EditActivity extends BaseActivity {
                         Log.d( "RECORD", error.toString() );
                     }
                 }
-        );
+        )
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                String credentials = username + ":" + password;
+                Log.d( "AUTH", "Login Info: " + credentials );
+                String auth = "Basic " + Base64.encodeToString( credentials.getBytes(), Base64.NO_WRAP );
+                headers.put( "Authorization", auth );
+                return headers;
+            }
+
+        };
 
         requestQueue.add( request );
 

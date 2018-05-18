@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -25,6 +27,7 @@ import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class AddActivity extends BaseActivity {
 
@@ -110,7 +113,19 @@ public class AddActivity extends BaseActivity {
                                             Log.d( "RECORD", error.toString() );
                                         }
                                     }
-                            );
+                            )
+                            {
+                                @Override
+                                public Map<String, String> getHeaders() throws AuthFailureError {
+                                    Map<String, String> headers = new HashMap<String, String>();
+                                    String credentials = username + ":" + password;
+                                    Log.d( "AUTH", "Login Info: " + credentials );
+                                    String auth = "Basic " + Base64.encodeToString( credentials.getBytes(), Base64.NO_WRAP );
+                                    headers.put( "Authorization", auth );
+                                    return headers;
+                                }
+
+                            };
 
                             requestQueue.add( request );
                             intent = new Intent(AddActivity.this, MainActivity.class);
