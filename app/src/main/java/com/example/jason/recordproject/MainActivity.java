@@ -51,9 +51,7 @@ public class MainActivity extends BaseActivity {
         lstViewRecords = findViewById(R.id.listViewRecords);
         txtAllRecords = findViewById(R.id.txtAllRecords);
 
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssX"); //2018-05-07T21:12:27.000Z
-        gson = gsonBuilder.create();
+
 
         String url = "https://apirecord.azurewebsites.net/records";
         StringRequest request = new StringRequest(
@@ -75,26 +73,6 @@ public class MainActivity extends BaseActivity {
                     public void onErrorResponse( VolleyError error ) {
                         // Do something with the error
                         Log.d( "INTERNET", error.toString() );
-                        AlertDialog alertDialog = new AlertDialog.Builder(
-                                MainActivity.this).create();
-
-                        // Setting Dialog Title
-                        alertDialog.setTitle("Bad Internet Connection or Bad Login ");
-
-                        // Setting Dialog Message
-                        alertDialog.setMessage("Please make sure you are entering the right credentials or check internet connection and try again.");
-
-
-                        // Setting Try Again Button
-                        alertDialog.setButton("Try Again", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                MainActivity.this.startActivity(intent);
-
-                            }
-                        });
-
-                        alertDialog.show();
 
                         toastIt( "Internet Failure: " + error.toString() );
                     }
@@ -120,7 +98,6 @@ public class MainActivity extends BaseActivity {
 
                 intent = new Intent(MainActivity.this, ShowActivity.class);
                 intent.putExtra("recordID", records[position].getId());
-                toastIt("RecordID is " + records[position].getId());
 
                 startActivity(intent);
 
@@ -133,41 +110,6 @@ public class MainActivity extends BaseActivity {
 
 
     }
-
-
-//    public void internetOnClick(View v) {
-//
-//        String url = "https://apirecord.azurewebsites.net/records/1";
-//        StringRequest request = new StringRequest(Request.Method.GET, url,
-//
-////        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,
-////                //Call backs
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        //Do something with the returned data
-//                        Log.d("INTERNET", response);
-//
-//                        Record record2 = gson.fromJson(response, Record.class);
-//                        //Record record2 = gson.fromJson(response, Record.class);
-//                        txtAllRecords.setText(record2.getName());
-//                        //Take data to display on the view
-//
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        //Do something with the error
-//                        Log.d("INTERNET", error.toString());
-//                        toastIt("Internet Failure " + error.toString());
-//
-//                    }
-//                });
-//
-//        requestQueue.add(request);
-//
-//    }
 
     public void addRecordActivityOnClick(View v) {
         intent = new Intent(this, AddActivity.class);

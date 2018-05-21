@@ -10,6 +10,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -19,6 +21,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
@@ -37,11 +40,7 @@ public class EditActivity extends BaseActivity {
     EditText edtImage;
     Record record;
     int recordID;
-    String recordName;
-    String recordDesc;
-    double recordPrice;
-    int recordRating;
-    String recordImage;
+    ImageView edtImageView;
 
     int idRecord;
 
@@ -57,18 +56,12 @@ public class EditActivity extends BaseActivity {
         edtPrice = findViewById(R.id.edtPrice);
         edtRating = findViewById(R.id.edtRating);
         edtImage = findViewById(R.id.edtImage);
-
-
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssX"); //2018-05-07T21:12:27.000Z
-        gson = gsonBuilder.create();
+        edtImageView = findViewById(R.id.edtImageView);
 
         if( getIntent().getExtras() != null ) {
           recordID = getIntent().getExtras().getInt( "recordID" );
        }
 
-
-        toastIt("recordid is " + recordID);
         String url = "https://apirecord.azurewebsites.net/records/" + recordID;
         StringRequest request = new StringRequest(
                 Request.Method.GET, url,
@@ -87,6 +80,7 @@ public class EditActivity extends BaseActivity {
                         edtPrice.setText(Double.toString(record.getPrice()));
                         edtRating.setText(Integer.toString(record.getRating()));
                         edtImage.setText(record.getImage());
+                        Picasso.with(getApplicationContext()).load(record.getImage()).into(edtImageView);
 
                     }
                 },
@@ -112,7 +106,6 @@ public class EditActivity extends BaseActivity {
         };
 
         requestQueue.add( request );
-
     }
 
     public void editButtonOnClick(View v) {
@@ -142,8 +135,6 @@ public class EditActivity extends BaseActivity {
                         Log.d( "RECORD", response.toString() );
                         intent = new Intent(getApplicationContext(), ShowActivity.class);
                         intent.putExtra("recordID", recordID);
-                        records[recordID] = record;
-                        toastIt("Record ID IS " + idRecord);
                         EditActivity.this.startActivity(intent);
                     }
                 },

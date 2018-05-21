@@ -35,6 +35,8 @@ public class ShowActivity extends BaseActivity {
     TextView txtPrice;
     TextView txtRating;
     TextView txtImage;
+    TextView txtCreatedDate;
+    TextView txtModifiedDate;
     DecimalFormat precision = new DecimalFormat("0.00");
     int recordID;
     int idRecord;
@@ -46,15 +48,14 @@ public class ShowActivity extends BaseActivity {
 
         setContentView(R.layout.activity_show);
 
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssX"); //2018-05-07T21:12:27.000Z
-        gson = gsonBuilder.create();
-
         txtName = findViewById(R.id.txtName);
         txtDesc = findViewById(R.id.txtDesc);
         txtPrice = findViewById(R.id.txtPrice);
         txtRating = findViewById(R.id.txtRating);
         imageView = findViewById(R.id.imgView);
+        txtCreatedDate = findViewById(R.id.txtCreatedDate);
+        txtModifiedDate = findViewById(R.id.txtModifiedDate);
+
 //        txtImage = findViewById(R.id.txtImage);
         intent = getIntent();
         recordID = intent.getIntExtra("recordID", 0);
@@ -78,8 +79,10 @@ public class ShowActivity extends BaseActivity {
                         txtDesc.setText(record.getDescription());
                         txtPrice.setText("$" + precision.format(record.getPrice()));
                         txtRating.setText(Integer.toString(record.getRating()));
+
+                       txtCreatedDate.setText(record.getCreatedAt().toString());
+                       txtModifiedDate.setText(record.getUpdatedAt().toString());
                         Picasso.with(getApplicationContext()).load(record.getImage()).into(imageView);
-//                        txtImage.setText(record.getImage());
 
 
 
@@ -115,7 +118,6 @@ public class ShowActivity extends BaseActivity {
 
         intent = new Intent(this, EditActivity.class);
         intent.putExtra("recordID", recordID);
-        toastIt("Record ID IS" + recordID);
         ShowActivity.this.startActivity(intent);
     }
 
@@ -199,6 +201,12 @@ public class ShowActivity extends BaseActivity {
                 startActivity(intent);
 
                 return true;
+
+            case R.id.menu_logout :
+                username = "";
+                password = "";
+                intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
 
             default :
                 return super.onOptionsItemSelected(item);

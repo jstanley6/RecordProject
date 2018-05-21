@@ -44,10 +44,6 @@ public class AddActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
 
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssX"); //2018-05-07T21:12:27.000Z
-        gson = gsonBuilder.create();
-
         setContentView(R.layout.activity_add);
 
         edtName = findViewById(R.id.edtName);
@@ -128,15 +124,9 @@ public class AddActivity extends BaseActivity {
                             };
 
                             requestQueue.add( request );
-                            intent = new Intent(AddActivity.this, MainActivity.class);
-                            AddActivity.this.startActivity(intent);
 
                         }
 
 
             }
-
-    public void toastIt(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-    }
 }
